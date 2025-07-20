@@ -1,6 +1,6 @@
 # Discord Bot
 
-シンプルなDiscord Botです。メッセージに対して「こんにちは」と返信します。
+OpenAI APIを使用してAIと会話ができるDiscord Botです。
 
 ## セットアップ
 
@@ -10,10 +10,11 @@ pip install -r requirements.txt
 ```
 
 2. 環境変数の設定
-`.env.example`を`.env`にコピーして、Discord BotトークンをDISCORD_BOT_TOKENに設定してください。
+`.env`ファイルを作成して、以下の環境変数を設定してください：
 
-```bash
-cp .env.example .env
+```
+DISCORD_BOT_TOKEN=your_discord_bot_token_here
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 3. Discord Developer Portalでの設定
@@ -28,7 +29,9 @@ python bot.py
 
 ## 機能
 
-- すべてのメッセージに対して「こんにちは」と返信
+- OpenAI APIを使用してメッセージに対してAIが返信
+- GPT-3.5-turboモデルを使用
+- 日本語での自然な会話が可能
 
 ## 必要な権限
 
