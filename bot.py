@@ -3,7 +3,7 @@ from discord.ext import commands
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
-import requests
+import base64
 from io import BytesIO
 
 # .envファイルから環境変数を読み込み
@@ -29,21 +29,18 @@ async def generate_image(ctx, *, prompt: str):
         # 処理中のメッセージを送信
         await ctx.send(f'「{prompt}」の画像を生成中...')
         
-        # DALL-E 3を使用して画像を生成
+        # gpt-image-1を使用して画像を生成
         response = client.images.generate(
-            model="dall-e-3",
-            prompt=prompt,
-            size="1024x1024",
-            quality="standard",
-            n=1,
+            model="gpt-image-1",
+            prompt=prompt
         )
         
-        # 生成された画像のURLを取得
-        image_url = response.data[0].url
+        # 生成された画像のbase64データを取得
+        image_base64 = response.data[0].b64_json
+        image_bytes = base64.b64decode(image_base64)
         
-        # 画像をダウンロード
-        image_response = requests.get(image_url)
-        image_data = BytesIO(image_response.content)
+        # BytesIOオブジェクトを作成
+        image_data = BytesIO(image_bytes)
         
         # Discord.pyのFileオブジェクトを作成
         file = discord.File(image_data, filename='generated_image.png')
