@@ -2,9 +2,15 @@ import discord
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
+from openai import OpenAI
+import requests
+from io import BytesIO
 
 # .envファイルから環境変数を読み込み
 load_dotenv()
+
+# OpenAI クライアントの初期化
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 # Botの初期設定
 intents = discord.Intents.default()
@@ -16,6 +22,39 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 async def on_ready():
     print(f'{bot.user} としてログインしました')
 
+@bot.command(name='generate', aliases=['画像生成'])
+async def generate_image(ctx, *, prompt: str):
+    """画像生成コマンド"""
+    try:
+        # 処理中のメッセージを送信
+        await ctx.send(f'「{prompt}」の画像を生成中...')
+        
+        # DALL-E 3を使用して画像を生成
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=prompt,
+            size="1024x1024",
+            quality="standard",
+            n=1,
+        )
+        
+        # 生成された画像のURLを取得
+        image_url = response.data[0].url
+        
+        # 画像をダウンロード
+        image_response = requests.get(image_url)
+        image_data = BytesIO(image_response.content)
+        
+        # Discord.pyのFileオブジェクトを作成
+        file = discord.File(image_data, filename='generated_image.png')
+        
+        # 画像をDiscordに送信
+        await ctx.send(f'「{prompt}」の画像を生成しました！', file=file)
+        
+    except Exception as e:
+        print(f'画像生成エラー: {e}')
+        await ctx.send('申し訳ありません。画像の生成中にエラーが発生しました。')
+
 @bot.event
 async def on_message(message):
     # Bot自身のメッセージには反応しない
@@ -24,9 +63,6 @@ async def on_message(message):
     
     # デバッグ用：受信したメッセージをログに出力
     print(f'受信: {message.author}: {message.content}')
-    
-    # すべてのメッセージに対して"こんにちは"と返信
-    await message.channel.send('こんにちは')
     
     # コマンド処理を有効にする
     await bot.process_commands(message)

@@ -1,6 +1,6 @@
 # Discord Bot
 
-シンプルなDiscord Botです。メッセージに対して「こんにちは」と返信します。
+OpenAI APIを使用してAI画像生成ができるDiscord Botです。
 
 ## セットアップ
 
@@ -10,10 +10,11 @@ pip install -r requirements.txt
 ```
 
 2. 環境変数の設定
-`.env.example`を`.env`にコピーして、Discord BotトークンをDISCORD_BOT_TOKENに設定してください。
+`.env`ファイルを作成して、以下の環境変数を設定してください：
 
-```bash
-cp .env.example .env
+```
+DISCORD_BOT_TOKEN=your_discord_bot_token_here
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 3. Discord Developer Portalでの設定
@@ -28,10 +29,20 @@ python bot.py
 
 ## 機能
 
-- すべてのメッセージに対して「こんにちは」と返信
+- `!generate [プロンプト]` または `!画像生成 [プロンプト]` コマンドでAI画像を生成
+- DALL-E 3モデルを使用して高品質な1024x1024の画像を生成
+- 生成された画像はDiscordチャンネルに直接投稿
+
+## 使用例
+
+```
+!generate 夕日が沈む美しい海岸線
+!画像生成 宇宙に浮かぶ未来都市
+```
 
 ## 必要な権限
 
 - メッセージの読み取り
 - メッセージの送信
+- ファイルの添付（画像送信用）
 - Message Content Intent（必須）
